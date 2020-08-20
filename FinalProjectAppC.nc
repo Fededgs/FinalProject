@@ -6,7 +6,8 @@ implementation {
 	components MainC, FinalProjectC as App;
 	components new AMSenderC(AM_RADIO_COUNT_MSG); 
 	components new AMReceiverC(AM_RADIO_COUNT_MSG);
-	components new TimerMilliC();
+	components new TimerMilliC() as timer1;
+	components new TimerMilliC() as timerACK ; //ACK
 	components ActiveMessageC;
 	components RandomC;
 	
@@ -20,7 +21,8 @@ implementation {
 	App.AMSend -> AMSenderC;
 	App.AMControl -> ActiveMessageC;
 	
-	App.MilliTimer -> TimerMilliC;
+	App.MilliTimer -> timer1;
+	App.MilliTimerACK -> timerACK;
 	App.Packet -> AMSenderC;
 	App.Random -> RandomC;	
 

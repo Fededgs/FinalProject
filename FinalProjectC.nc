@@ -13,6 +13,7 @@ module FinalProjectC @safe(){
 		interface Receive;
 		interface AMSend;
 		interface Timer<TMilli> as MilliTimer;
+		interface Timer<TMilli> as MilliTimerACK;
 		interface SplitControl as AMControl;
     	interface Packet;	
     	interface Random;		
@@ -21,6 +22,7 @@ module FinalProjectC @safe(){
 implementation {
 	message_t packet;
 	bool locked;
+	bool ack=FALSE;
 	uint8_t counter=0;
 	
 	event void Boot.booted() {
@@ -38,11 +40,11 @@ implementation {
 				break;
 				//sensor node 2
 				case 2:
-					call MilliTimer.startPeriodic(PERIOD_NODE_2);
+					//call MilliTimer.startPeriodic(PERIOD_NODE_2);
 				break;
 				//sensor node 3
 				case 3:
-					call MilliTimer.startPeriodic(PERIOD_NODE_3);
+					//call MilliTimer.startPeriodic(PERIOD_NODE_3);
 				break;
 				
 				//4 --> gateway
@@ -66,7 +68,7 @@ implementation {
 		printf("Timer FIRED \n");
 		printfflush();	  
 		
-		if(locked){
+		if(locked || ack){ //se sta provando a ritrasmetter in millitimerack.fired, non posso inviare uovo packetto
 	  		return;
 	  	}
 	  	else {
@@ -87,11 +89,37 @@ implementation {
 	  	
 	  	if(call AMSend.send(4,&packet,sizeof(radio_count_msg_t))==SUCCESS){ //TODO AM_BROADCAST_ADDR
 	  		locked=TRUE;
-	  		counter++;	
+	  		ack=TRUE;
+	  		counter++;
+	  		call MilliTimerACK.startOneShot(PERIOD_ACK);	
 	  	}	
 	  		
 		}
 		
+	}
+	
+	
+	//Timer ack received??
+	event void MilliTimerACK.fired(){
+		
+		if(ack){//ack==true, ack not received.--> retrasmission
+			radio_count_msg_t* rcm =(radio_count_msg_t*)call Packet.getPayload(&packet, sizeof(radio_count_msg_t));	 
+			printf("RETRASMISSION %u,%u,%u,%u,%u \n",rcm->msg_type,rcm->nodeid,rcm->gateway,rcm->value,rcm->count);
+			printfflush();
+			
+			if(call AMSend.send(4,&packet,sizeof(radio_count_msg_t))==SUCCESS){ //TODO AM_BROADCAST_ADDR
+		  		locked=TRUE;
+		  		ack=TRUE;
+		  		//counter++;
+		  		call MilliTimerACK.startOneShot(PERIOD_ACK); //start at 0+Period_ack	
+	  	}		
+		
+		}
+		else{
+			printf("TimerAck stopped");
+			printfflush();	 
+		}	
+	
 	}
 	
 	
@@ -120,13 +148,22 @@ implementation {
 			  		
 	  		if(rcm->msg_type==DATA){
 	  			printf("Rec DATA: %u,%u,%u,%u,%u \n",rcm->msg_type,rcm->nodeid,rcm->gateway,rcm->value,rcm->count);
+	  			printfflush();
 	  		}
 	   		if(rcm->msg_type==ACK){
 	   			printf("Rec ACK: %u,%u,%u,%u,%u \n",rcm->msg_type,rcm->nodeid,rcm->gateway,rcm->value,rcm->count);
+	   			printfflush();
 	   		}
 			  		
 
-	 	 	printfflush();	 
+			if(TOS_NODE_ID==1 || TOS_NODE_ID==2 || TOS_NODE_ID==3){ 
+ 	 			printf("ACKKK");
+ 	 			printfflush();	 
+ 	 			
+ 	 			if(rcm->count == counter-1){
+ 	 				ack=FALSE;
+ 	 			}
+ 	 		}
 	 	 	
 		//-------------------__resending to Network server__--------------------------------------------------------------------------
 	 	 	if(TOS_NODE_ID==4  ){
@@ -151,6 +188,7 @@ implementation {
 				 	 	if(call AMSend.send(5,&packet,sizeof(radio_count_msg_t))==SUCCESS){ 
 				 	 		printf("Sent DATA%u,%u,%u,%u,%u \n",rcm_new->msg_type,rcm_new->nodeid,rcm_new->gateway,rcm_new->value,rcm_new->count);
 					  		locked=TRUE;	
+					  		printfflush();	 
 				  		}
 				  	}
 				  	//ACK received from Server Network
@@ -167,6 +205,7 @@ implementation {
 				  		if(call AMSend.send(rcm->nodeid,&packet,sizeof(radio_count_msg_t))==SUCCESS){
 				 	 		printf("Sent ACK %u,%u,%u,%u,%u \n",rcm_ack->msg_type,rcm_ack->nodeid,rcm_ack->gateway,rcm_ack->value,rcm_ack->count);
 					  		locked=TRUE;	
+					 	 	printfflush();	 					  		
 				  		}
 				  		
 				  	}
@@ -191,6 +230,7 @@ implementation {
  	 				if(call AMSend.send(rcm->gateway,&packet,sizeof(radio_count_msg_t))==SUCCESS){ //TODO
 				 	 		printf("Sent ACK %u,%u,%u,%u,%u \n",rcm_ack->msg_type,rcm_ack->nodeid,rcm_ack->gateway,rcm_ack->value,rcm_ack->count);
 					  		locked=TRUE;	
+					  		printfflush();	 
 				  		}
  	 			
  	 			}
@@ -198,10 +238,7 @@ implementation {
  	 		
  	 		}
  	 		
- 	 		if(TOS_NODE_ID==1 || TOS_NODE_ID==2 || TOS_NODE_ID==3){ 
- 	 			printf("ACK RECEIVED BY NODES");
- 	 			//SE rcm->counter== count OK TODO
- 	 		}
+ 	 		
  	 		
  	 	
  	 	return bufPtr;
