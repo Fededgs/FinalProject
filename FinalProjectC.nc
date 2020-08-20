@@ -1,3 +1,8 @@
+/**
+ *  
+ *  @author Di Giusto Federico 10693473
+ *
+ */
 #include "Timer.h"
 #include "FinalProject.h"
 #include "printf.h"
@@ -16,6 +21,7 @@ module FinalProjectC @safe(){
 implementation {
 	message_t packet;
 	bool locked;
+	uint8_t counter=0;
 	
 	event void Boot.booted() {
 		call AMControl.start();
@@ -71,14 +77,17 @@ implementation {
 	  	
 	  	rcm->value=call Random.rand16() % 100;
 	  	rcm->nodeid=TOS_NODE_ID;
+	  	rcm->msg_type=DATA;
+	  	rcm->count = counter;
 	  	
-	  	printf("Sent%u,%u \n",rcm->nodeid,rcm->value);
+		printf("Sent: %u,%u,%u,%u,%u \n",rcm->msg_type,rcm->nodeid,rcm->gateway,rcm->value,rcm->count);
 	 	printfflush();
 	 	
 	 	
 	  	
-	  	if(call AMSend.send(4,&packet,sizeof(radio_count_msg_t))==SUCCESS){ //TODO
-	  		locked=TRUE;	
+	  	if(call AMSend.send(4,&packet,sizeof(radio_count_msg_t))==SUCCESS){ //TODO AM_BROADCAST_ADDR
+	  		locked=TRUE;
+	  		counter++;	
 	  	}	
 	  		
 		}
@@ -103,32 +112,97 @@ implementation {
 	 		
       		radio_count_msg_t* rcm = (radio_count_msg_t*)payload;
       		
-      		printf(" %u %u\n",rcm->nodeid,rcm->value );
+      		//packet error received
+      		if(rcm==NULL){ 
+				  		return bufPtr;	
+			  		}
+			  		
+			  		
+	  		if(rcm->msg_type==DATA){
+	  			printf("Rec DATA: %u,%u,%u,%u,%u \n",rcm->msg_type,rcm->nodeid,rcm->gateway,rcm->value,rcm->count);
+	  		}
+	   		if(rcm->msg_type==ACK){
+	   			printf("Rec ACK: %u,%u,%u,%u,%u \n",rcm->msg_type,rcm->nodeid,rcm->gateway,rcm->value,rcm->count);
+	   		}
+			  		
+
 	 	 	printfflush();	 
 	 	 	
 		//-------------------__resending to Network server__--------------------------------------------------------------------------
-	 	 	if(TOS_NODE_ID==4 ){
+	 	 	if(TOS_NODE_ID==4  ){
 	 	 	
 		 	 	if(locked){
 		  			return bufPtr;
 		  		}
 			  	else {
+			  	//4 receive 2 types of messages; data and ack. must distinguish them.
+			  	
 					radio_count_msg_t* rcm_new =(radio_count_msg_t*)call Packet.getPayload(&packet, sizeof(radio_count_msg_t));	  
-				  	if(rcm==NULL){
-				  		return bufPtr;	
-			  	}
-			  	
-			  	rcm_new->value=rcm->value;
-			  	rcm_new->nodeid=rcm->nodeid;
-			  	
-		 	 	if(call AMSend.send(5,&packet,sizeof(radio_count_msg_t))==SUCCESS){ //TODO
-		  		locked=TRUE;	
-		  		}
-	  		
-	  		}
-	 	 		
-	 	 	
+				  	
+			  		
+			  		//DATA received from sensor node-->INOLTRARE
+				  	if(rcm->msg_type==DATA){
+				  		rcm_new->msg_type= DATA;
+					  	rcm_new->value=rcm->value;
+					  	rcm_new->nodeid=rcm->nodeid;
+					  	rcm_new->count=rcm->count;
+					  	rcm_new->gateway=TOS_NODE_ID;
+					  	
+				 	 	if(call AMSend.send(5,&packet,sizeof(radio_count_msg_t))==SUCCESS){ 
+				 	 		printf("Sent DATA%u,%u,%u,%u,%u \n",rcm_new->msg_type,rcm_new->nodeid,rcm_new->gateway,rcm_new->value,rcm_new->count);
+					  		locked=TRUE;	
+				  		}
+				  	}
+				  	//ACK received from Server Network
+				  	if(rcm->msg_type==ACK){
+				  		
+				  		radio_count_msg_t* rcm_ack =(radio_count_msg_t*)call Packet.getPayload(&packet, sizeof(radio_count_msg_t));	
+ 	 				
+	 	 				rcm_ack->msg_type= ACK;
+					  	rcm_ack->value=0;//in ACK no need of value
+					  	rcm_ack->nodeid=rcm->nodeid;
+					  	rcm_ack->count=rcm->count;
+					  	rcm_ack->gateway=rcm->gateway;
+					  	
+				  		if(call AMSend.send(rcm->nodeid,&packet,sizeof(radio_count_msg_t))==SUCCESS){
+				 	 		printf("Sent ACK %u,%u,%u,%u,%u \n",rcm_ack->msg_type,rcm_ack->nodeid,rcm_ack->gateway,rcm_ack->value,rcm_ack->count);
+					  		locked=TRUE;	
+				  		}
+				  		
+				  	}
+	  			}	
  	 		}
+ 	 		
+ 	 		if(TOS_NODE_ID==5){ //Server network
+ 	 		//TODO: check duplicates
+ 	 			if(locked){
+ 	 				return bufPtr;
+ 	 			}
+ 	 			else{
+ 
+ 	 				radio_count_msg_t* rcm_ack =(radio_count_msg_t*)call Packet.getPayload(&packet, sizeof(radio_count_msg_t));	
+ 	 				
+ 	 				rcm_ack->msg_type= ACK;
+				  	rcm_ack->value=0;//in ACK no need of value
+				  	rcm_ack->nodeid=rcm->nodeid;
+				  	rcm_ack->count=rcm->count;
+				  	rcm_ack->gateway=rcm->gateway;
+ 	 			
+ 	 				if(call AMSend.send(rcm->gateway,&packet,sizeof(radio_count_msg_t))==SUCCESS){ //TODO
+				 	 		printf("Sent ACK %u,%u,%u,%u,%u \n",rcm_ack->msg_type,rcm_ack->nodeid,rcm_ack->gateway,rcm_ack->value,rcm_ack->count);
+					  		locked=TRUE;	
+				  		}
+ 	 			
+ 	 			}
+ 	 		
+ 	 		
+ 	 		}
+ 	 		
+ 	 		if(TOS_NODE_ID==1 || TOS_NODE_ID==2 || TOS_NODE_ID==3){ 
+ 	 			printf("ACK RECEIVED BY NODES");
+ 	 			//SE rcm->counter== count OK TODO
+ 	 		}
+ 	 		
  	 	
  	 	return bufPtr;
  	 }
