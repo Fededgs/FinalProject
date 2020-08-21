@@ -12,8 +12,8 @@ implementation {
 	components RandomC;
 	
 	//components for printf
-	components PrintfC;
-  	components SerialStartC;
+	//components PrintfC;
+  	//components SerialStartC;
 	
 	App.Boot -> MainC.Boot;
   
