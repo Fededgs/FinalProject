@@ -23,8 +23,19 @@ implementation {
 	message_t packet;
 	bool locked;
 	bool ack=FALSE;
-	uint8_t counter=0;
+	uint8_t counter=1;
 	
+	//count needed to Server Netw to established if the packet received is a duplicates
+	/*
+	uint8_t last_count_1 = 0;
+	uint8_t last_count_2 = 0;
+	uint8_t last_count_3 = 0;		
+	uint8_t last_count_4 = 0;	
+	uint8_t last_count_5 = 0;
+	
+	*/
+	uint8_t count_server[5];
+		
 	event void Boot.booted() {
 		dbg("boot","Application booted on node %u.\n",TOS_NODE_ID);
 		call AMControl.start();
@@ -304,6 +315,7 @@ implementation {
  	 				return bufPtr;
  	 			}
  	 			else{
+ 	 	
  
  	 				radio_count_msg_t* rcm_ack =(radio_count_msg_t*)call Packet.getPayload(&packet, sizeof(radio_count_msg_t));	
  	 				
@@ -312,6 +324,25 @@ implementation {
 				  	rcm_ack->nodeid=rcm->nodeid;
 				  	rcm_ack->count=rcm->count;
 				  	rcm_ack->gateway=rcm->gateway;
+				  	
+				  	
+				  	
+				  	dbg_clear("radio_pack","\t\t DUPLICATES\n" );
+					dbg_clear("radio_pack", "\t\t sensor node 1 counter: %hhu \n ", count_server[0]);
+					dbg_clear("radio_pack", "\t\t sensor node 2 counter: %hhu \n ", count_server[1]);
+					dbg_clear("radio_pack", "\t\t sensor node 3 counter: %hhu \n ", count_server[2]);
+					dbg_clear("radio_pack", "\t\t sensor node 4 counter: %hhu \n ", count_server[3]);
+					dbg_clear("radio_pack", "\t\t sensor node 5 counter: %hhu \n ", count_server[4]);
+		  	
+		  			if(count_server[rcm->nodeid]==rcm->count ){
+				  		dbg_clear("radio_pack","\t\t IT'S A DUPLICATE!!!\n" );
+				  	}
+				  	
+				  	else{
+				  		dbg_clear("radio_pack","\t\t NOT a Duplicate\n" );
+				  		count_server[rcm->nodeid - 1]=rcm->count;
+				  	}
+				  	
  	 			
  	 				if(call AMSend.send(rcm->gateway,&packet,sizeof(radio_count_msg_t))==SUCCESS){ //TODO
  	 				
