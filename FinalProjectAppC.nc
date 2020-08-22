@@ -1,5 +1,5 @@
 #include "FinalProject.h"
-#include "printf.h"
+//#include "printf.h"
 
 configuration FinalProjectAppC{}
 implementation {

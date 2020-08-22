@@ -71,29 +71,29 @@ print ">>>Will boot at time", time2/t.ticksPerSecond(), "[sec]";
 
 #Create node 3
 print "Creating node 3...";
-node1 =t.getNode(1);
-time1 = 0*t.ticksPerSecond(); 
-node1.bootAtTime(time1);
+node3 =t.getNode(3);
+time3 = 0*t.ticksPerSecond(); 
+node3.bootAtTime(time3);
 print ">>>Will boot at time",  time1/t.ticksPerSecond(), "[sec]";
 
 #Create node 4
 print "Creating node 4...";
-node1 =t.getNode(1);
-time1 = 0*t.ticksPerSecond(); 
-node1.bootAtTime(time1);
+node4 =t.getNode(4);
+time4 = 0*t.ticksPerSecond(); 
+node4.bootAtTime(time4);
 print ">>>Will boot at time",  time1/t.ticksPerSecond(), "[sec]";
 
 #Create node 5
 print "Creating node 5...";
-node1 =t.getNode(1);
-time1 = 0*t.ticksPerSecond(); 
-node1.bootAtTime(time1);
+node5 =t.getNode(5);
+time5 = 0*t.ticksPerSecond(); 
+node5.bootAtTime(time5);
 print ">>>Will boot at time",  time1/t.ticksPerSecond(), "[sec]";
 
 
 
 
-
+##topology
 print "Creating radio channels..."
 f = open(topofile, "r");
 lines = f.readlines()
@@ -123,7 +123,7 @@ for line in lines:
             mid_compl = 0;
             sys.stdout.write ("#")
             sys.stdout.flush()
-        for i in range(1, 3):
+        for i in range(1, 6):
             t.getNode(i).addNoiseTraceReading(val)
 print "Done!";
 
@@ -133,7 +133,7 @@ for i in range(1, 6):
 
 print "Start simulation with TOSSIM! \n\n\n";
 
-for i in range(0,100): ################
+for i in range(0,700): ################
 	t.runNextEvent()
 	
 print "\n\n\nSimulation finished!";

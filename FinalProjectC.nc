@@ -111,6 +111,7 @@ implementation {
 	  		ack=TRUE;
 	  		counter++;
 	  		call MilliTimerACK.startOneShot(PERIOD_ACK);	
+	  		
 	  	}	
 	  		
 		}
@@ -138,8 +139,8 @@ implementation {
 				dbg("radio_pack",">>>Pack\n ", call Packet.payloadLength( &packet ) );
 				dbg_clear("radio_pack","\t\t Payload Sent\n" );
 				dbg_clear("radio_pack", "\t\t msg_type: %hhu \n ", rcm->msg_type);
-				dbg_clear("radio_pack", "\t\t msg_type: %hhu \n ", rcm->nodeid);
-				dbg_clear("radio_pack", "\t\t msg_type: %hhu \n ", rcm->gateway);
+				dbg_clear("radio_pack", "\t\t msg_nodeid: %hhu \n ", rcm->nodeid);
+				dbg_clear("radio_pack", "\t\t msg_gateway: %hhu \n ", rcm->gateway);
 				dbg_clear("radio_pack", "\t\t value: %hhu \n ", rcm->value);
 				dbg_clear("radio_pack", "\t\t counter: %hhu \n ", rcm->count);
 				dbg_clear("radio_send", "\n ");
@@ -153,7 +154,7 @@ implementation {
 		
 		}
 		else{
-			dbg_clear("radio_ack", "\t\t RETRASMISSION STOPPED received at time %s \n", sim_time_string());
+			dbg_clear("radio_ack", "\t\t RETRASMISSION STOPPED  at time %s \n", sim_time_string());
 
 			//printf("TimerAck stopped");
 			//printfflush();	 
@@ -168,6 +169,7 @@ implementation {
 		if (&packet == bufPtr) {
 		  locked = FALSE;
 		}
+		
  	}
  	
  	
@@ -180,17 +182,8 @@ implementation {
 	 		
       		radio_count_msg_t* rcm = (radio_count_msg_t*)payload;
       		
-      		dbg("radio_rec", "Received packet at time %s\n", sim_time_string());
+      		//dbg("radio_rec", "Received packet at time %s\n", sim_time_string());
 	
-			dbg("radio_pack", ">>>Pack \n");
-			dbg_clear("radio_pack","\t\t Payload Received\n" );
-			dbg_clear("radio_pack", "\t\t msg_type: %hhu \n ", rcm->msg_type);
-			dbg_clear("radio_pack", "\t\t msg_type: %hhu \n ", rcm->nodeid);
-			dbg_clear("radio_pack", "\t\t msg_type: %hhu \n ", rcm->gateway);
-			dbg_clear("radio_pack", "\t\t value: %hhu \n ", rcm->value);
-			dbg_clear("radio_pack", "\t\t counter: %hhu \n ", rcm->count);
-			dbg_clear("radio_send", "\n ");
-			dbg_clear("radio_pack", "\n");
 	  		
       		//packet error received
       		if(rcm==NULL){ 
@@ -208,11 +201,22 @@ implementation {
 	   			//printf("Rec ACK: %u,%u,%u,%u,%u \n",rcm->msg_type,rcm->nodeid,rcm->gateway,rcm->value,rcm->count);
 	   			//printfflush();
 	   		}
+	   		
+	   		
+			dbg("radio_pack", ">>>Pack \n");
+			dbg_clear("radio_pack","\t\t Payload Received\n" );
+			dbg_clear("radio_pack", "\t\t msg_type: %hhu \n ", rcm->msg_type);
+			dbg_clear("radio_pack", "\t\t msg_nodeid: %hhu \n ", rcm->nodeid);
+			dbg_clear("radio_pack", "\t\t msg_gateway: %hhu \n ", rcm->gateway);
+			dbg_clear("radio_pack", "\t\t value: %hhu \n ", rcm->value);
+			dbg_clear("radio_pack", "\t\t counter: %hhu \n ", rcm->count);
+			dbg_clear("radio_send", "\n ");
+			dbg_clear("radio_pack", "\n");
 			  		
 
 			if(TOS_NODE_ID==1 || TOS_NODE_ID==2 || TOS_NODE_ID==3){ 
 			
-				dbg_clear("radio_ack", "\t\tand ACK received at time %s \n", sim_time_string());
+				dbg_clear("radio_ack", "\t\t ACK received at time %s \n", sim_time_string());
  	 			//printf("ACKKK");
  	 			//printfflush();	 
  	 			
@@ -246,8 +250,8 @@ implementation {
 							dbg("radio_pack",">>>Pack\n ", call Packet.payloadLength( &packet ) );
 							dbg_clear("radio_pack","\t\t Payload Sent\n" );
 							dbg_clear("radio_pack", "\t\t msg_type: %hhu \n ", rcm_new->msg_type);
-							dbg_clear("radio_pack", "\t\t msg_type: %hhu \n ", rcm_new->nodeid);
-							dbg_clear("radio_pack", "\t\t msg_type: %hhu \n ", rcm_new->gateway);
+							dbg_clear("radio_pack", "\t\t msg_nodeid: %hhu \n ", rcm_new->nodeid);
+							dbg_clear("radio_pack", "\t\t msg_gateway: %hhu \n ", rcm_new->gateway);
 							dbg_clear("radio_pack", "\t\t value: %hhu \n ", rcm_new->value);
 							dbg_clear("radio_pack", "\t\t counter: %hhu \n ", rcm_new->count);
 							dbg_clear("radio_send", "\n ");
@@ -275,8 +279,8 @@ implementation {
 							dbg("radio_pack",">>>Pack\n ", call Packet.payloadLength( &packet ) );
 							dbg_clear("radio_pack","\t\t Payload Sent\n" );
 							dbg_clear("radio_pack", "\t\t msg_type: %hhu \n ", rcm_ack->msg_type);
-							dbg_clear("radio_pack", "\t\t msg_type: %hhu \n ", rcm_ack->nodeid);
-							dbg_clear("radio_pack", "\t\t msg_type: %hhu \n ", rcm_ack->gateway);
+							dbg_clear("radio_pack", "\t\t msg_nodeid: %hhu \n ", rcm_ack->nodeid);
+							dbg_clear("radio_pack", "\t\t msg_gateway: %hhu \n ", rcm_ack->gateway);
 							dbg_clear("radio_pack", "\t\t value: %hhu \n ", rcm_ack->value);
 							dbg_clear("radio_pack", "\t\t counter: %hhu \n ", rcm_ack->count);
 							dbg_clear("radio_send", "\n ");
@@ -312,8 +316,8 @@ implementation {
 							dbg("radio_pack",">>>Pack\n ", call Packet.payloadLength( &packet ) );
 							dbg_clear("radio_pack","\t\t Payload Sent\n" );
 							dbg_clear("radio_pack", "\t\t msg_type: %hhu \n ", rcm_ack->msg_type);
-							dbg_clear("radio_pack", "\t\t msg_type: %hhu \n ", rcm_ack->nodeid);
-							dbg_clear("radio_pack", "\t\t msg_type: %hhu \n ", rcm_ack->gateway);
+							dbg_clear("radio_pack", "\t\t msg_nodeid: %hhu \n ", rcm_ack->nodeid);
+							dbg_clear("radio_pack", "\t\t msg_gateway: %hhu \n ", rcm_ack->gateway);
 							dbg_clear("radio_pack", "\t\t value: %hhu \n ", rcm_ack->value);
 							dbg_clear("radio_pack", "\t\t counter: %hhu \n ", rcm_ack->count);
 							dbg_clear("radio_send", "\n ");
