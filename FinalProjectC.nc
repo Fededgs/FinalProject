@@ -42,11 +42,11 @@ implementation {
 				break;
 				//sensor node 2
 				case 2:
-					call MilliTimer.startPeriodic(PERIOD_NODE_2);
+				//	call MilliTimer.startPeriodic(PERIOD_NODE_2);
 				break;
 				//sensor node 3
 				case 3:
-					call MilliTimer.startPeriodic(PERIOD_NODE_3);
+				//	call MilliTimer.startPeriodic(PERIOD_NODE_3);
 				break;
 				
 				//4 --> gateway
@@ -94,7 +94,7 @@ implementation {
 	 	
 	 	
 	  	
-	  	if(call AMSend.send(4,&packet,sizeof(radio_count_msg_t))==SUCCESS){ //TODO AM_BROADCAST_ADDR
+	  	if(call AMSend.send(AM_BROADCAST_ADDR,&packet,sizeof(radio_count_msg_t))==SUCCESS){ //TODO AM_BROADCAST_ADDR
 	  	
 			dbg("radio_send", "Packet DATA sent successfully!\n");
 			dbg("radio_pack",">>>Pack\n ", call Packet.payloadLength( &packet ) );
@@ -189,7 +189,8 @@ implementation {
       		if(rcm==NULL){ 
 				  		return bufPtr;	
 			  		}
-			  		
+			
+			dbg("radio_pack", "locked?: %hhu \n",locked);  		
 			  		
 	  		if(rcm->msg_type==DATA){
 	  			dbg("radio_pack", "DATA message arrived\n");
@@ -226,7 +227,7 @@ implementation {
  	 		}
 	 	 	
 		//-------------------__resending to Network server__--------------------------------------------------------------------------
-	 	 	if(TOS_NODE_ID==4  ){
+	 	 	if(TOS_NODE_ID==4 || TOS_NODE_ID==5  ){
 	 	 	
 		 	 	if(locked){
 		  			return bufPtr;
@@ -247,7 +248,7 @@ implementation {
 					  	rcm_new->count=rcm->count;
 					  	rcm_new->gateway=TOS_NODE_ID;
 					  	
-				 	 	if(call AMSend.send(5,&packet,sizeof(radio_count_msg_t))==SUCCESS){ 
+				 	 	if(call AMSend.send(6,&packet,sizeof(radio_count_msg_t))==SUCCESS){ 
 				 	 		dbg("radio_send", "Packet DATA GATEWAY-->SERVER sent successfully!\n");
 							dbg("radio_pack",">>>Pack\n ", call Packet.payloadLength( &packet ) );
 							dbg_clear("radio_pack","\t\t Payload Sent\n" );
@@ -297,7 +298,7 @@ implementation {
 	  			}	
  	 		}
  	 		
- 	 		if(TOS_NODE_ID==5){ //Server network
+ 	 		if(TOS_NODE_ID==6){ //Server network
  	 		//TODO: check duplicates
  	 			if(locked){
  	 				return bufPtr;

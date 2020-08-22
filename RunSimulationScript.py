@@ -76,19 +76,27 @@ time3 = 3*t.ticksPerSecond();
 node3.bootAtTime(time3);
 print ">>>Will boot at time",  time1/t.ticksPerSecond(), "[sec]";
 
-#Create node 4
+#Create node GTW2
 print "Creating node 4...";
 node4 =t.getNode(4);
 time4 = 0*t.ticksPerSecond(); 
 node4.bootAtTime(time4);
 print ">>>Will boot at time",  time1/t.ticksPerSecond(), "[sec]";
 
-#Create node 5
+#Create node 5 GTW1
 print "Creating node 5...";
 node5 =t.getNode(5);
 time5 = 0*t.ticksPerSecond(); 
 node5.bootAtTime(time5);
 print ">>>Will boot at time",  time1/t.ticksPerSecond(), "[sec]";
+
+#Create node 6 SERVER
+print "Creating node 6...";
+node6 = t.getNode(6);
+time6 = 0*t.ticksPerSecond(); #dopo 5 secondi
+node6.bootAtTime(time6);
+print ">>>Will boot at time", time2/t.ticksPerSecond(), "[sec]";
+
 
 
 
@@ -123,11 +131,11 @@ for line in lines:
             mid_compl = 0;
             sys.stdout.write ("#")
             sys.stdout.flush()
-        for i in range(1, 6):
+        for i in range(1, 7): ###################
             t.getNode(i).addNoiseTraceReading(val)
 print "Done!";
 
-for i in range(1, 6): 
+for i in range(1, 7): 
     print ">>>Creating noise model for node:",i;
     t.getNode(i).createNoiseModel()
 
