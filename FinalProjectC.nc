@@ -42,11 +42,11 @@ implementation {
 				break;
 				//sensor node 2
 				case 2:
-					//call MilliTimer.startPeriodic(PERIOD_NODE_2);
+					call MilliTimer.startPeriodic(PERIOD_NODE_2);
 				break;
 				//sensor node 3
 				case 3:
-					//call MilliTimer.startPeriodic(PERIOD_NODE_3);
+					call MilliTimer.startPeriodic(PERIOD_NODE_3);
 				break;
 				
 				//4 --> gateway
@@ -234,6 +234,8 @@ implementation {
 			  	else {
 			  	//4 receive 2 types of messages; data and ack. must distinguish them.
 			  	
+
+			  		
 					radio_count_msg_t* rcm_new =(radio_count_msg_t*)call Packet.getPayload(&packet, sizeof(radio_count_msg_t));	  
 				  	
 			  		

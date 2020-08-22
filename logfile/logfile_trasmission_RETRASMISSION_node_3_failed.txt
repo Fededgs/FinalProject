@@ -1,0 +1,178 @@
+********************************************
+*                                          *
+*             TOSSIM Script                *
+*                                          *
+********************************************
+Initializing mac....
+Initializing radio channels....
+    using topology file: topology.txt
+    using noise file: meyer-heavy.txt
+Initializing simulator....
+Activate debug message on channel init
+Activate debug message on channel boot
+Activate debug message on channel timer
+Activate debug message on channel radio
+Activate debug message on channel radio_send
+Activate debug message on channel radio_ack
+Activate debug message on channel radio_rec
+Activate debug message on channel radio_pack
+Activate debug message on channel sensor
+Creating node 1...
+>>>Will boot at time 0 [sec]
+Creating node 2...
+>>>Will boot at time 0 [sec]
+Creating node 3...
+>>>Will boot at time 0 [sec]
+Creating node 4...
+>>>Will boot at time 0 [sec]
+Creating node 5...
+>>>Will boot at time 0 [sec]
+Creating radio channels...
+>>>Setting radio channel from node  1  to node  2  with gain  -60.0  dBm
+>>>Setting radio channel from node  2  to node  1  with gain  -60.0  dBm
+>>>Setting radio channel from node  1  to node  4  with gain  -60.0  dBm
+>>>Setting radio channel from node  2  to node  4  with gain  -60.0  dBm
+>>>Setting radio channel from node  3  to node  4  with gain  -60.0  dBm
+>>>Setting radio channel from node  4  to node  5  with gain  -60.0  dBm
+>>>Setting radio channel from node  5  to node  4  with gain  -60.0  dBm
+>>>Setting radio channel from node  4  to node  1  with gain  -60.0  dBm
+>>>Setting radio channel from node  4  to node  2  with gain  -60.0  dBm
+>>>Setting radio channel from node  4  to node  3  with gain  -60.0  dBm
+Initializing Closest Pattern Matching (CPM)...
+Reading noise model data file: meyer-heavy.txt
+Loading:##Done!
+>>>Creating noise model for node: 1
+>>>Creating noise model for node: 2
+>>>Creating noise model for node: 3
+>>>Creating noise model for node: 4
+>>>Creating noise model for node: 5
+Start simulation with TOSSIM! 
+
+
+
+DEBUG (1): Application booted on node 1.
+DEBUG (5): Application booted on node 5.
+DEBUG (3): Application booted on node 3.
+DEBUG (2): Application booted on node 2.
+DEBUG (4): Application booted on node 4.
+DEBUG (1): Radio on 
+DEBUG (2): Radio on 
+DEBUG (4): Radio on 
+DEBUG (3): Radio on 
+DEBUG (5): Radio on 
+DEBUG (3): MillitTimer fired at 0:0:4.882812510.
+DEBUG (3): Packet DATA sent successfully!
+DEBUG (3): >>>Pack
+ 		 Payload Sent
+		 msg_type: 1 
+ 		 msg_nodeid: 3 
+ 		 msg_gateway: 0 
+ 		 value: 92 
+ 		 counter: 0 
+ 
+ 
+DEBUG (1): MillitTimer fired at 0:0:4.882812510.
+DEBUG (1): Packet DATA sent successfully!
+DEBUG (1): >>>Pack
+ 		 Payload Sent
+		 msg_type: 1 
+ 		 msg_nodeid: 1 
+ 		 msg_gateway: 0 
+ 		 value: 14 
+ 		 counter: 0 
+ 
+ 
+DEBUG (2): MillitTimer fired at 0:0:4.882812510.
+DEBUG (2): Packet DATA sent successfully!
+DEBUG (2): >>>Pack
+ 		 Payload Sent
+		 msg_type: 1 
+ 		 msg_nodeid: 2 
+ 		 msg_gateway: 0 
+ 		 value: 21 
+ 		 counter: 0 
+ 
+ 
+DEBUG (4): DATA message arrived
+DEBUG (4): >>>Pack 
+		 Payload Received
+		 msg_type: 1 
+ 		 msg_nodeid: 1 
+ 		 msg_gateway: 0 
+ 		 value: 14 
+ 		 counter: 0 
+ 
+ 
+DEBUG (4): Packet DATA GATEWAY-->SERVER sent successfully!
+DEBUG (4): >>>Pack
+ 		 Payload Sent
+		 msg_type: 1 
+ 		 msg_nodeid: 1 
+ 		 msg_gateway: 4 
+ 		 value: 14 
+ 		 counter: 0 
+ 
+ 
+DEBUG (5): DATA message arrived
+DEBUG (5): >>>Pack 
+		 Payload Received
+		 msg_type: 1 
+ 		 msg_nodeid: 1 
+ 		 msg_gateway: 4 
+ 		 value: 14 
+ 		 counter: 0 
+ 
+ 
+DEBUG (5): Packet ACK SERVER-->GATEWAY sent successfully!
+DEBUG (5): >>>Pack
+ 		 Payload Sent
+		 msg_type: 2 
+ 		 msg_nodeid: 1 
+ 		 msg_gateway: 4 
+ 		 value: 0 
+ 		 counter: 0 
+ 
+ 
+DEBUG (4): ACK message arrived
+DEBUG (4): >>>Pack 
+		 Payload Received
+		 msg_type: 2 
+ 		 msg_nodeid: 1 
+ 		 msg_gateway: 4 
+ 		 value: 0 
+ 		 counter: 0 
+ 
+ 
+DEBUG (4): Packet ACK GATEWAY-->NODE sent successfully!
+DEBUG (4): >>>Pack
+ 		 Payload Sent
+		 msg_type: 2 
+ 		 msg_nodeid: 1 
+ 		 msg_gateway: 4 
+ 		 value: 0 
+ 		 counter: 0 
+ 
+ 
+DEBUG (1): ACK message arrived
+DEBUG (1): >>>Pack 
+		 Payload Received
+		 msg_type: 2 
+ 		 msg_nodeid: 1 
+ 		 msg_gateway: 4 
+ 		 value: 0 
+ 		 counter: 0 
+ 
+ 
+		 ACK received at time 0:0:4.907180653 
+DEBUG (3): MilliTimerACK fired at 0:0:5.859375010.
+DEBUG (3): Packet RETRASMISSION DATA sent successfully!
+DEBUG (3): >>>Pack
+ 		 Payload Sent
+		 msg_type: 1 
+ 		 msg_nodeid: 3 
+ 		 msg_gateway: 0 
+ 		 value: 92 
+ 		 counter: 0 
+ 
+ 
+
