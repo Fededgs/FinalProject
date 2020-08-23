@@ -1,0 +1,68 @@
+DEBUG (6): locked?: 0 
+DEBUG (6): DATA message arrived
+DEBUG (6): >>>Pack 
+		 Payload Received
+		 msg_type: 1 
+ 		 msg_nodeid: 1 
+ 		 msg_gateway: 5 
+ 		 value: 17 
+ 		 counter: 8 
+ 
+ 
+		 DUPLICATES
+		 sensor node 1 counter: 7 
+ 		 sensor node 2 counter: 0 
+ 		 sensor node 3 counter: 0 
+ 		 sensor node 4 counter: 0 
+ 		 sensor node 5 counter: 0 
+ 		 NOT a Duplicate
+DEBUG (6): Packet ACK SERVER-->GATEWAY sent successfully!
+DEBUG (6): >>>Pack
+ 		 Payload Sent
+		 msg_type: 2 
+ 		 msg_nodeid: 1 
+ 		 msg_gateway: 5 
+ 		 value: 0 
+ 		 counter: 8 
+ 
+ 
+DEBUG (5): locked?: 0 
+DEBUG (5): ACK message arrived
+DEBUG (5): >>>Pack 
+		 Payload Received
+		 msg_type: 2 
+ 		 msg_nodeid: 1 
+ 		 msg_gateway: 5 
+ 		 value: 0 
+ 		 counter: 8 
+ 
+ 
+DEBUG (5): Packet ACK GATEWAY-->NODE sent successfully!
+DEBUG (5): >>>Pack
+ 		 Payload Sent
+		 msg_type: 2 
+ 		 msg_nodeid: 1 
+ 		 msg_gateway: 5 
+ 		 value: 0 
+ 		 counter: 8 
+ 
+ 
+DEBUG (6): locked?: 0 
+DEBUG (6): DATA message arrived
+DEBUG (6): >>>Pack 
+		 Payload Received
+		 msg_type: 1 
+ 		 msg_nodeid: 1 
+ 		 msg_gateway: 4 
+ 		 value: 17 
+ 		 counter: 8 
+ 
+ 
+		 DUPLICATES
+		 sensor node 1 counter: 8 
+ 		 sensor node 2 counter: 0 
+ 		 sensor node 3 counter: 0 
+ 		 sensor node 4 counter: 0 
+ 		 sensor node 5 counter: 0 
+ 		 IT'S A DUPLICATE!!!
+

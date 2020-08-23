@@ -15,10 +15,8 @@ typedef nx_struct radio_count_msg {
 
 enum {
   AM_RADIO_COUNT_MSG = 6,
-  PERIOD_NODE_1=5000,
-  PERIOD_NODE_2=5000,
-  PERIOD_NODE_3=5000,
-  PERIOD_ACK=4000,
+  PERIOD_NODE=5000,
+  PERIOD_ACK=1000,
   
 };
 

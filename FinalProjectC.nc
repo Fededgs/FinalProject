@@ -5,7 +5,7 @@
  */
 #include "Timer.h"
 #include "FinalProject.h"
-//#include "printf.h"
+#include "printf.h"
 
 module FinalProjectC @safe(){
 	uses {
@@ -49,19 +49,27 @@ implementation {
 			{
 				//sensor node 1
 				case 1:
-					call MilliTimer.startPeriodic(PERIOD_NODE_1);
+					call MilliTimer.startPeriodic(PERIOD_NODE);
 				break;
 				//sensor node 2
 				case 2:
-				//	call MilliTimer.startPeriodic(PERIOD_NODE_2);
+					call MilliTimer.startPeriodic(PERIOD_NODE);;
 				break;
 				//sensor node 3
 				case 3:
-				//	call MilliTimer.startPeriodic(PERIOD_NODE_3);
+					call MilliTimer.startPeriodic(PERIOD_NODE);
 				break;
-				
+				//sensor node 4	
+				case 4:
+					call MilliTimer.startPeriodic(PERIOD_NODE);
+				break;
+				//sensore node 5
+				case 5:
+					call MilliTimer.startPeriodic(PERIOD_NODE);
+				break;
 				//4 --> gateway
-				//5 --> Network Server
+				//5 --> gateway
+				//6 --> Network Server
 				default:
 				break;
 			}	    	
@@ -130,7 +138,7 @@ implementation {
 	}
 	
 	
-	//Timer ack received??
+	
 	event void MilliTimerACK.fired(){
 		
 		dbg("timer","MilliTimerACK fired at %s.\n", sim_time_string());
@@ -164,12 +172,15 @@ implementation {
 	  		}		
 		
 		}
+		/*
 		else{
 			dbg_clear("radio_ack", "\t\t RETRASMISSION STOPPED  at time %s \n", sim_time_string());
 
 			//printf("TimerAck stopped");
 			//printfflush();	 
-		}	
+		}
+		*/
+			
 	
 	}
 	
@@ -228,9 +239,9 @@ implementation {
 
 			if(TOS_NODE_ID==1 || TOS_NODE_ID==2 || TOS_NODE_ID==3){ 
 			
-				dbg_clear("radio_ack", "\t\t ACK received at time %s \n", sim_time_string());
- 	 			//printf("ACKKK");
- 	 			//printfflush();	 
+				dbg_clear("radio_ack", "\t\t ACK received - RETRASMISSION STOPPED at time %s \n", sim_time_string());
+ 	 			call MilliTimerACK.stop();	 
+
  	 			
  	 			if(rcm->count == counter-1){
  	 				ack=FALSE;
@@ -311,6 +322,7 @@ implementation {
  	 		
  	 		if(TOS_NODE_ID==6){ //Server network
  	 		//TODO: check duplicates
+ 	 			
  	 			if(locked){
  	 				return bufPtr;
  	 			}
@@ -334,11 +346,13 @@ implementation {
 					dbg_clear("radio_pack", "\t\t sensor node 4 counter: %hhu \n ", count_server[3]);
 					dbg_clear("radio_pack", "\t\t sensor node 5 counter: %hhu \n ", count_server[4]);
 		  	
-		  			if(count_server[rcm->nodeid]==rcm->count ){
+		  			if(count_server[rcm->nodeid-1]==rcm->count ){
 				  		dbg_clear("radio_pack","\t\t IT'S A DUPLICATE!!!\n" );
 				  	}
 				  	
 				  	else{
+				  		printf(" %u %u\n",rcm->nodeid,rcm->value );
+				  		printfflush();
 				  		dbg_clear("radio_pack","\t\t NOT a Duplicate\n" );
 				  		count_server[rcm->nodeid - 1]=rcm->count;
 				  	}

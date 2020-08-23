@@ -1,5 +1,5 @@
 #include "FinalProject.h"
-//#include "printf.h"
+#include "printf.h"
 
 configuration FinalProjectAppC{}
 implementation {
@@ -11,9 +11,9 @@ implementation {
 	components ActiveMessageC;
 	components RandomC;
 	
-	//components for printf
-	//components PrintfC;
-  	//components SerialStartC;
+//	components for printf
+	components PrintfC;
+  	components SerialStartC;
 	
 	App.Boot -> MainC.Boot;
   
