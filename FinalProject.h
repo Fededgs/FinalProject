@@ -5,8 +5,8 @@ typedef nx_struct radio_count_msg {
 	nx_uint8_t msg_type;
 	nx_uint16_t value;
 	nx_uint16_t nodeid;
-	nx_uint16_t count; //enumerated the packages.
 	nx_uint16_t gateway;
+	nx_uint16_t count; 
   
 } radio_count_msg_t;
 

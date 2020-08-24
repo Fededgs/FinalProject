@@ -49,9 +49,6 @@ t.addChannel("radio_rec",out);## controlla se usato
 print "Activate debug message on channel radio_pack"
 t.addChannel("radio_pack",out);
 
-print "Activate debug message on channel sensor"
-t.addChannel("sensor",out);
-
 
 ###################___Create nodes____######################
 
@@ -65,37 +62,51 @@ print ">>>Will boot at time",  time1/t.ticksPerSecond(), "[sec]";
 #Create node 2
 print "Creating node 2...";
 node2 = t.getNode(2);
-time2 = 1*t.ticksPerSecond(); #dopo 5 secondi
+time2 = 1*t.ticksPerSecond(); 
 node2.bootAtTime(time2);
 print ">>>Will boot at time", time2/t.ticksPerSecond(), "[sec]";
 
 #Create node 3
 print "Creating node 3...";
 node3 =t.getNode(3);
-time3 = 3*t.ticksPerSecond(); 
+time3 = 2*t.ticksPerSecond(); 
 node3.bootAtTime(time3);
-print ">>>Will boot at time",  time1/t.ticksPerSecond(), "[sec]";
+print ">>>Will boot at time",  time3/t.ticksPerSecond(), "[sec]";
 
-#Create node GTW2
+#Create node 4
 print "Creating node 4...";
 node4 =t.getNode(4);
-time4 = 0*t.ticksPerSecond(); 
+time4 = 2*t.ticksPerSecond(); 
 node4.bootAtTime(time4);
-print ">>>Will boot at time",  time1/t.ticksPerSecond(), "[sec]";
+print ">>>Will boot at time",  time4/t.ticksPerSecond(), "[sec]";
 
-#Create node 5 GTW1
+#Create node 5 
 print "Creating node 5...";
 node5 =t.getNode(5);
 time5 = 0*t.ticksPerSecond(); 
 node5.bootAtTime(time5);
-print ">>>Will boot at time",  time1/t.ticksPerSecond(), "[sec]";
+print ">>>Will boot at time",  time5/t.ticksPerSecond(), "[sec]";
 
-#Create node 6 SERVER
+#Create node 6 GTW1
 print "Creating node 6...";
 node6 = t.getNode(6);
 time6 = 0*t.ticksPerSecond(); #dopo 5 secondi
 node6.bootAtTime(time6);
-print ">>>Will boot at time", time2/t.ticksPerSecond(), "[sec]";
+print ">>>Will boot at time", time6/t.ticksPerSecond(), "[sec]";
+
+#Create node 7 GTW2
+print "Creating node 7...";
+node7 =t.getNode(7);
+time7 = 0*t.ticksPerSecond(); 
+node7.bootAtTime(time7);
+print ">>>Will boot at time",  time7/t.ticksPerSecond(), "[sec]";
+
+#Create node 8 SERVER
+print "Creating node 8...";
+node8 =t.getNode(8);
+time8 = 0*t.ticksPerSecond(); 
+node8.bootAtTime(time8);
+print ">>>Will boot at time",  time8/t.ticksPerSecond(), "[sec]";
 
 
 
@@ -131,7 +142,7 @@ for line in lines:
             mid_compl = 0;
             sys.stdout.write ("#")
             sys.stdout.flush()
-        for i in range(1, 7): ###################
+        for i in range(1, 9): ###################
             t.getNode(i).addNoiseTraceReading(val)
 print "Done!";
 

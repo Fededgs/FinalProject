@@ -5,7 +5,7 @@
  */
 #include "Timer.h"
 #include "FinalProject.h"
-#include "printf.h"
+//#include "printf.h"
 
 module FinalProjectC @safe(){
 	uses {
@@ -25,15 +25,6 @@ implementation {
 	bool ack=FALSE;
 	uint8_t counter=1;
 	
-	//count needed to Server Netw to established if the packet received is a duplicates
-	/*
-	uint8_t last_count_1 = 0;
-	uint8_t last_count_2 = 0;
-	uint8_t last_count_3 = 0;		
-	uint8_t last_count_4 = 0;	
-	uint8_t last_count_5 = 0;
-	
-	*/
 	uint8_t count_server[5];
 		
 	event void Boot.booted() {
@@ -67,6 +58,7 @@ implementation {
 				case 5:
 					call MilliTimer.startPeriodic(PERIOD_NODE);
 				break;
+				
 				//4 --> gateway
 				//5 --> gateway
 				//6 --> Network Server
@@ -152,7 +144,7 @@ implementation {
 			//printf("RETRASMISSION %u,%u,%u,%u,%u \n",rcm->msg_type,rcm->nodeid,rcm->gateway,rcm->value,rcm->count);
 			//printfflush();
 			
-			if(call AMSend.send(4,&packet,sizeof(radio_count_msg_t))==SUCCESS){ //TODO AM_BROADCAST_ADDR
+			if(call AMSend.send(AM_BROADCAST_ADDR,&packet,sizeof(radio_count_msg_t))==SUCCESS){ //TODO AM_BROADCAST_ADDR
 				
 				dbg("radio_send", "Packet RETRASMISSION DATA sent successfully!\n");
 				dbg("radio_pack",">>>Pack\n ", call Packet.payloadLength( &packet ) );
@@ -237,19 +229,20 @@ implementation {
 			dbg_clear("radio_pack", "\n");
 			  		
 
-			if(TOS_NODE_ID==1 || TOS_NODE_ID==2 || TOS_NODE_ID==3){ 
+			if(TOS_NODE_ID==1 || TOS_NODE_ID==2 || TOS_NODE_ID==3 || TOS_NODE_ID==4 || TOS_NODE_ID==5){ 
 			
-				dbg_clear("radio_ack", "\t\t ACK received - RETRASMISSION STOPPED at time %s \n", sim_time_string());
- 	 			call MilliTimerACK.stop();	 
+				 
 
  	 			
  	 			if(rcm->count == counter-1){
+ 	 				dbg_clear("radio_ack", "\t\t ACK received - RETRASMISSION STOPPED at time %s \n", sim_time_string());
+	 	 			call MilliTimerACK.stop();	
  	 				ack=FALSE;
  	 			}
  	 		}
 	 	 	
 		//-------------------__resending to Network server__--------------------------------------------------------------------------
-	 	 	if(TOS_NODE_ID==4 || TOS_NODE_ID==5  ){
+	 	 	if(TOS_NODE_ID==6 || TOS_NODE_ID==7  ){
 	 	 	
 		 	 	if(locked){
 		  			return bufPtr;
@@ -270,7 +263,7 @@ implementation {
 					  	rcm_new->count=rcm->count;
 					  	rcm_new->gateway=TOS_NODE_ID;
 					  	
-				 	 	if(call AMSend.send(6,&packet,sizeof(radio_count_msg_t))==SUCCESS){ 
+				 	 	if(call AMSend.send(8,&packet,sizeof(radio_count_msg_t))==SUCCESS){ 
 				 	 		dbg("radio_send", "Packet DATA GATEWAY-->SERVER sent successfully!\n");
 							dbg("radio_pack",">>>Pack\n ", call Packet.payloadLength( &packet ) );
 							dbg_clear("radio_pack","\t\t Payload Sent\n" );
@@ -320,7 +313,7 @@ implementation {
 	  			}	
  	 		}
  	 		
- 	 		if(TOS_NODE_ID==6){ //Server network
+ 	 		if(TOS_NODE_ID==8){ //Server network
  	 		//TODO: check duplicates
  	 			
  	 			if(locked){
@@ -351,14 +344,12 @@ implementation {
 				  	}
 				  	
 				  	else{
-				  		printf(" %u %u\n",rcm->nodeid,rcm->value );
-				  		printfflush();
+				  		//printf(" %u %u\n",rcm->nodeid,rcm->value );
+				  		//printfflush();
 				  		dbg_clear("radio_pack","\t\t NOT a Duplicate\n" );
 				  		count_server[rcm->nodeid - 1]=rcm->count;
-				  	}
-				  	
- 	 			
- 	 				if(call AMSend.send(rcm->gateway,&packet,sizeof(radio_count_msg_t))==SUCCESS){ //TODO
+				  		
+		 				if(call AMSend.send(rcm->gateway,&packet,sizeof(radio_count_msg_t))==SUCCESS){ //TODO
  	 				
  	 						dbg("radio_send", "Packet ACK SERVER-->GATEWAY sent successfully!\n");
 							dbg("radio_pack",">>>Pack\n ", call Packet.payloadLength( &packet ) );
@@ -374,6 +365,10 @@ implementation {
 					  		locked=TRUE;	
 					  		//printfflush();	 
 				  		}
+				  	}
+				  	
+ 	 			
+
  	 			
  	 			}
  	 		
