@@ -10,6 +10,7 @@ Link channel ThingSpeak: https://thingspeak.com/channels/1119275
 # FinalProject
 
 ## In the folder:
+* ```REPORT_FEDERICO_DI_GIUSTO.PDF```: Final report
 * ```/logfile``` logfiles:
   * ```duplicate_detected.txt```: case of a duplicate. Server receive the msg->counter equal to the last one it receive from the same node.
   * ```logfile_trasmission_KO_single_node.txt```: single node, ACK received by the sensor and MillitimerACK stopped for retrasmission. (node1=sensor node, node4=gateway, node5=server))
