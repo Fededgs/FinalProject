@@ -5,7 +5,7 @@
  */
 #include "Timer.h"
 #include "FinalProject.h"
-//#include "printf.h"
+//#include "printf.h" //TODO add if in Cooja-NodeRed
 
 module FinalProjectC @safe(){
 	uses {
@@ -20,11 +20,11 @@ module FinalProjectC @safe(){
 	}
 }
 implementation {
+
 	message_t packet;
 	bool locked;
-	bool ack=FALSE;
 	uint8_t counter=1;
-	
+	//array for Server to store last counter and check duplicates
 	uint8_t count_server[5];
 		
 	event void Boot.booted() {
@@ -81,10 +81,8 @@ implementation {
 	event void MilliTimer.fired(){	
 	
 		dbg("timer","MillitTimer fired at %s.\n", sim_time_string());
-		//printf("Timer FIRED \n");
-		//printfflush();	  
 		
-		if(locked || ack){ //se sta provando a ritrasmetter in millitimerack.fired, non posso inviare uovo packetto
+		if(locked){ 
 	  		return;
 	  	}
 	  	else {
@@ -93,19 +91,12 @@ implementation {
 	  		return;	
 	  	}
 	  	
-
-	  	
 	  	rcm->value=call Random.rand16() % 100;
 	  	rcm->nodeid=TOS_NODE_ID;
 	  	rcm->msg_type=DATA;
 	  	rcm->count = counter;
 	  	
-		//printf("Sent: %u,%u,%u,%u,%u \n",rcm->msg_type,rcm->nodeid,rcm->gateway,rcm->value,rcm->count);
-	 	//printfflush();
-	 	
-	 	
-	  	
-	  	if(call AMSend.send(AM_BROADCAST_ADDR,&packet,sizeof(radio_count_msg_t))==SUCCESS){ //TODO AM_BROADCAST_ADDR
+	  	if(call AMSend.send(AM_BROADCAST_ADDR,&packet,sizeof(radio_count_msg_t))==SUCCESS){ 
 	  	
 			dbg("radio_send", "Packet DATA sent successfully!\n");
 			dbg("radio_pack",">>>Pack\n ", call Packet.payloadLength( &packet ) );
@@ -119,11 +110,10 @@ implementation {
 			dbg_clear("radio_pack", "\n");
 	  		
 	  		locked=TRUE;
-	  		ack=TRUE;
 	  		counter++;
 	  		call MilliTimerACK.startOneShot(PERIOD_ACK);	
 	  		
-	  	}	
+	  		}	
 	  		
 		}
 		
@@ -133,51 +123,34 @@ implementation {
 	
 	event void MilliTimerACK.fired(){
 		
-		dbg("timer","MilliTimerACK fired at %s.\n", sim_time_string());
-		
-		if(ack){//ack==true, ack not received.--> retrasmission
-		
-			//dbg_clear("radio_ack", "\t\t RETRASMISSION and NO ack received at time %s \n", sim_time_string());
-		
-			radio_count_msg_t* rcm =(radio_count_msg_t*)call Packet.getPayload(&packet, sizeof(radio_count_msg_t));	
-			 
-			//printf("RETRASMISSION %u,%u,%u,%u,%u \n",rcm->msg_type,rcm->nodeid,rcm->gateway,rcm->value,rcm->count);
-			//printfflush();
-			
-			if(call AMSend.send(AM_BROADCAST_ADDR,&packet,sizeof(radio_count_msg_t))==SUCCESS){ //TODO AM_BROADCAST_ADDR
-				
-				dbg("radio_send", "Packet RETRASMISSION DATA sent successfully!\n");
-				dbg("radio_pack",">>>Pack\n ", call Packet.payloadLength( &packet ) );
-				dbg_clear("radio_pack","\t\t Payload Sent\n" );
-				dbg_clear("radio_pack", "\t\t msg_type: %hhu \n ", rcm->msg_type);
-				dbg_clear("radio_pack", "\t\t msg_nodeid: %hhu \n ", rcm->nodeid);
-				dbg_clear("radio_pack", "\t\t msg_gateway: %hhu \n ", rcm->gateway);
-				dbg_clear("radio_pack", "\t\t value: %hhu \n ", rcm->value);
-				dbg_clear("radio_pack", "\t\t counter: %hhu \n ", rcm->count);
-				dbg_clear("radio_send", "\n ");
-				dbg_clear("radio_pack", "\n");
-				
-		  		locked=TRUE;
-		  		ack=TRUE;
-		  		//counter++;
-		  		call MilliTimerACK.startOneShot(PERIOD_ACK); //start at 0+Period_ack	
-	  		}		
-		
-		}
-		/*
-		else{
-			dbg_clear("radio_ack", "\t\t RETRASMISSION STOPPED  at time %s \n", sim_time_string());
-
-			//printf("TimerAck stopped");
-			//printfflush();	 
-		}
-		*/
-			
 	
+		radio_count_msg_t* rcm =(radio_count_msg_t*)call Packet.getPayload(&packet, sizeof(radio_count_msg_t));	
+		
+		dbg("timer","MilliTimerACK fired at %s.\n", sim_time_string());
+		 	
+		if(call AMSend.send(AM_BROADCAST_ADDR,&packet,sizeof(radio_count_msg_t))==SUCCESS){ //TODO AM_BROADCAST_ADDR
+			
+			dbg("radio_send", "Packet RETRASMISSION DATA sent successfully!\n");
+			dbg("radio_pack",">>>Pack\n ", call Packet.payloadLength( &packet ) );
+			dbg_clear("radio_pack","\t\t Payload Sent\n" );
+			dbg_clear("radio_pack", "\t\t msg_type: %hhu \n ", rcm->msg_type);
+			dbg_clear("radio_pack", "\t\t msg_nodeid: %hhu \n ", rcm->nodeid);
+			dbg_clear("radio_pack", "\t\t msg_gateway: %hhu \n ", rcm->gateway);
+			dbg_clear("radio_pack", "\t\t value: %hhu \n ", rcm->value);
+			dbg_clear("radio_pack", "\t\t counter: %hhu \n ", rcm->count);
+			dbg_clear("radio_send", "\n ");
+			dbg_clear("radio_pack", "\n");
+			
+	  		locked=TRUE;
+	  		
+			//start oneshot timer for retrasmission
+	  		call MilliTimerACK.startOneShot(PERIOD_ACK); 
+  		}		
+			
 	}
 	
 	
-	//locked set to FALSE
+	
 	event void AMSend.sendDone(message_t* bufPtr, error_t error) {
 		
 		if (&packet == bufPtr) {
@@ -187,7 +160,7 @@ implementation {
  	}
  	
  	
- 	//Receive packet Gateway
+/**************____RECEIVE PACKET____****************/ 	
  	event message_t* Receive.receive(message_t* bufPtr, void* payload, uint8_t len) {
  	 	
  	 	if (len != sizeof(radio_count_msg_t)) {return bufPtr;}
@@ -195,26 +168,22 @@ implementation {
 	 	else {
 	 		
       		radio_count_msg_t* rcm = (radio_count_msg_t*)payload;
-      		
-      		//dbg("radio_rec", "Received packet at time %s\n", sim_time_string());
-	
 	  		
       		//packet error received
       		if(rcm==NULL){ 
 				  		return bufPtr;	
 			  		}
 			
+			//for debugging, check if it's locked. It happens if gateway sends at the same time the packet to the Server.
 			dbg("radio_pack", "locked?: %hhu \n",locked);  		
 			  		
 	  		if(rcm->msg_type==DATA){
 	  			dbg("radio_pack", "DATA message arrived\n");
-	  			//printf("Rec DATA: %u,%u,%u,%u,%u \n",rcm->msg_type,rcm->nodeid,rcm->gateway,rcm->value,rcm->count);
-	  			//printfflush();
+	  			
 	  		}
 	   		if(rcm->msg_type==ACK){
 	   			dbg("radio_pack", "ACK message arrived\n");
-	   			//printf("Rec ACK: %u,%u,%u,%u,%u \n",rcm->msg_type,rcm->nodeid,rcm->gateway,rcm->value,rcm->count);
-	   			//printfflush();
+	   			
 	   		}
 	   		
 	   		
@@ -228,34 +197,29 @@ implementation {
 			dbg_clear("radio_send", "\n ");
 			dbg_clear("radio_pack", "\n");
 			  		
-
+			//CASE 1 : The sensor nodes receive the Packet(only ACK could be)
 			if(TOS_NODE_ID==1 || TOS_NODE_ID==2 || TOS_NODE_ID==3 || TOS_NODE_ID==4 || TOS_NODE_ID==5){ 
-			
-				 
-
- 	 			
+	
  	 			if(rcm->count == counter-1){
  	 				dbg_clear("radio_ack", "\t\t ACK received - RETRASMISSION STOPPED at time %s \n", sim_time_string());
+ 	 				
+ 	 				//Stop the Retrasmission Timer
 	 	 			call MilliTimerACK.stop();	
- 	 				ack=FALSE;
+ 	 				
  	 			}
  	 		}
 	 	 	
-		//-------------------__resending to Network server__--------------------------------------------------------------------------
+			//CASE 2: Gateway receive a packet.Could be a DATA (that must be forwarded to Server) or an ACK (must be delivered to the original Sensor Node)
 	 	 	if(TOS_NODE_ID==6 || TOS_NODE_ID==7  ){
 	 	 	
 		 	 	if(locked){
 		  			return bufPtr;
 		  		}
 			  	else {
-			  	//4 receive 2 types of messages; data and ack. must distinguish them.
-			  	
-
-			  		
+	  		
 					radio_count_msg_t* rcm_new =(radio_count_msg_t*)call Packet.getPayload(&packet, sizeof(radio_count_msg_t));	  
-				  	
-			  		
-			  		//DATA received from sensor node-->INOLTRARE
+				  				  		
+			  		//DATA received from sensor node-->FORWARDING
 				  	if(rcm->msg_type==DATA){
 				  		rcm_new->msg_type= DATA;
 					  	rcm_new->value=rcm->value;
@@ -263,6 +227,7 @@ implementation {
 					  	rcm_new->count=rcm->count;
 					  	rcm_new->gateway=TOS_NODE_ID;
 					  	
+					  	//Sending to the Server Node
 				 	 	if(call AMSend.send(8,&packet,sizeof(radio_count_msg_t))==SUCCESS){ 
 				 	 		dbg("radio_send", "Packet DATA GATEWAY-->SERVER sent successfully!\n");
 							dbg("radio_pack",">>>Pack\n ", call Packet.payloadLength( &packet ) );
@@ -274,19 +239,19 @@ implementation {
 							dbg_clear("radio_pack", "\t\t counter: %hhu \n ", rcm_new->count);
 							dbg_clear("radio_send", "\n ");
 							dbg_clear("radio_pack", "\n");
-				 	 	
-				 	 		//printf("Sent DATA%u,%u,%u,%u,%u \n",rcm_new->msg_type,rcm_new->nodeid,rcm_new->gateway,rcm_new->value,rcm_new->count);
+				 	 		
 					  		locked=TRUE;	
-					  		//printfflush();	 
+					  		
 				  		}
 				  	}
-				  	//ACK received from Server Network
+				  	
+				  	//ACK received from Server Network--> DELIVERING to sensor Node
 				  	if(rcm->msg_type==ACK){
 				  		
 				  		radio_count_msg_t* rcm_ack =(radio_count_msg_t*)call Packet.getPayload(&packet, sizeof(radio_count_msg_t));	
  	 				
 	 	 				rcm_ack->msg_type= ACK;
-					  	rcm_ack->value=0;//in ACK no need of value
+					  	rcm_ack->value=0;	//in ACK no need of value
 					  	rcm_ack->nodeid=rcm->nodeid;
 					  	rcm_ack->count=rcm->count;
 					  	rcm_ack->gateway=rcm->gateway;
@@ -304,24 +269,22 @@ implementation {
 							dbg_clear("radio_send", "\n ");
 							dbg_clear("radio_pack", "\n");
 							
-				 	 		//printf("Sent ACK %u,%u,%u,%u,%u \n",rcm_ack->msg_type,rcm_ack->nodeid,rcm_ack->gateway,rcm_ack->value,rcm_ack->count);
 					  		locked=TRUE;	
-					 	 	//printfflush();	 					  		
+					 	 	
 				  		}
 				  		
 				  	}
 	  			}	
  	 		}
  	 		
- 	 		if(TOS_NODE_ID==8){ //Server network
- 	 		//TODO: check duplicates
- 	 			
+ 	 		//CASE 3: Server Node can receive ONLY DATA Packet
+ 	 		if(TOS_NODE_ID==8){ 
+ 	 		
  	 			if(locked){
  	 				return bufPtr;
  	 			}
  	 			else{
- 	 	
- 
+ 	 
  	 				radio_count_msg_t* rcm_ack =(radio_count_msg_t*)call Packet.getPayload(&packet, sizeof(radio_count_msg_t));	
  	 				
  	 				rcm_ack->msg_type= ACK;
@@ -330,8 +293,7 @@ implementation {
 				  	rcm_ack->count=rcm->count;
 				  	rcm_ack->gateway=rcm->gateway;
 				  	
-				  	
-				  	
+					//print array elements for debugging
 				  	dbg_clear("radio_pack","\t\t DUPLICATES\n" );
 					dbg_clear("radio_pack", "\t\t sensor node 1 counter: %hhu \n ", count_server[0]);
 					dbg_clear("radio_pack", "\t\t sensor node 2 counter: %hhu \n ", count_server[1]);
@@ -339,13 +301,13 @@ implementation {
 					dbg_clear("radio_pack", "\t\t sensor node 4 counter: %hhu \n ", count_server[3]);
 					dbg_clear("radio_pack", "\t\t sensor node 5 counter: %hhu \n ", count_server[4]);
 		  	
+		  			//The counter received was yet arrived before: duplicate
 		  			if(count_server[rcm->nodeid-1]==rcm->count ){
 				  		dbg_clear("radio_pack","\t\t IT'S A DUPLICATE!!!\n" );
 				  	}
-				  	
+				  	//Not a duplicate--> ACK delivering to the gateway
 				  	else{
-				  		//printf(" %u %u\n",rcm->nodeid,rcm->value );
-				  		//printfflush();
+				  	
 				  		dbg_clear("radio_pack","\t\t NOT a Duplicate\n" );
 				  		count_server[rcm->nodeid - 1]=rcm->count;
 				  		
@@ -361,9 +323,9 @@ implementation {
 							dbg_clear("radio_pack", "\t\t counter: %hhu \n ", rcm_ack->count);
 							dbg_clear("radio_send", "\n ");
 							dbg_clear("radio_pack", "\n");
-				 	 		//printf("Sent ACK %u,%u,%u,%u,%u \n",rcm_ack->msg_type,rcm_ack->nodeid,rcm_ack->gateway,rcm_ack->value,rcm_ack->count);
+				 	 		
 					  		locked=TRUE;	
-					  		//printfflush();	 
+					  		
 				  		}
 				  	}
 				  	

@@ -11,9 +11,9 @@ implementation {
 	components ActiveMessageC;
 	components RandomC;
 	
-//	components for printf
-//	components PrintfC;
-  //	components SerialStartC;
+	//------------to add if in Cooja:components for printf------------
+	//components PrintfC;
+  	//components SerialStartC;
 	
 	App.Boot -> MainC.Boot;
   
