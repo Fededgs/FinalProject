@@ -3,7 +3,9 @@ Federico Di Giusto
 10693473
 
 
-Link repository github: 
+Link repository github: https://github.com/Fededgs/FinalProject
+
+Link channel ThingSpeak: https://thingspeak.com/channels/1119275
 
 # FinalProject
 
